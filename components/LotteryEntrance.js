@@ -106,7 +106,7 @@ export default function EnterLottery() {
                         {isLoading || isFetching ? (
                             <div className="animate-spin spinner-border h-8 w-8 border-b-2 rounded-full"></div>
                         ) : (
-                            "Enter Raffle"
+                            "Enter Lottery"
                         )}
                     </button>
                     <div>
