@@ -18,6 +18,7 @@ export default function EnterLottery() {
     const [entranceFee, setEntranceFee] = useState("0");
     const [playerCount, setPlayerCount] = useState("0");
     const [winner, setWinner] = useState("0");
+    const [state, setState] = useState(0);
 
     const {
         runContractFunction: enterLottery,
@@ -52,13 +53,21 @@ export default function EnterLottery() {
         params: {},
     });
 
+    //getState
+    const { runContractFunction: getState } = useWeb3Contract({
+        abi: abi,
+        contractAddress: lotteryContractAddress,
+        functionName: "getState",
+        params: {},
+    });
+
     async function handleSuccess(tx) {
         tx.wait(1);
         UIUpdate();
         handleNewNotification("success");
     }
-    async function handleError() {
-        handleNewNotification("error");
+    async function handleError(e) {
+        handleNewNotification("error", e);
         UIUpdate();
     }
 
@@ -76,12 +85,15 @@ export default function EnterLottery() {
         const entranceFeeFromCall = (await getEntryFees()).toString();
         const playerCountFromCall = (await getPlayerCount()).toString();
         const winnerFromCall = await getWinner();
+        const getGameState = (await getState()).toString();
         console.log(entranceFeeFromCall);
         console.log(playerCountFromCall);
         console.log(winnerFromCall);
+        console.log(`getGameState ${getGameState}`);
         setEntranceFee(entranceFeeFromCall);
         setPlayerCount(playerCountFromCall);
         setWinner(winnerFromCall);
+        setState(parseInt(getGameState));
     }
 
     useEffect(() => {
@@ -109,6 +121,7 @@ export default function EnterLottery() {
                             "Enter Lottery"
                         )}
                     </button>
+                    <div>Game State is {state == 0 ? "Open" : "Closed"}</div>
                     <div>
                         Entrance Fee:
                         {ethers.utils.formatUnits(entranceFee, "ether")}
